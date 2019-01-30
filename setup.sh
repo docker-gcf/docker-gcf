@@ -1,6 +1,6 @@
 #! /bin/sh
 
-HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/develop"
+HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/v0.1.0"
 
 PKGS_CACHE_UPDATED=0
 DOCKER_UTILS_SHARE_PATH="/usr/local/share/docker-utils"
