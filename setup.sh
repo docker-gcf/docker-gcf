@@ -91,7 +91,7 @@ main()
 
   echo_dbg "Installing gcf..."
   exe="/usr/local/bin/gcf"
-  dl_file "${HOME_BASE_URL}/debian/gcf.py" "${exe}" && chmod +x "${exe}" || exit 1
+  dl_file "${HOME_BASE_URL}/common/gcf.py" "${exe}" && chmod +x "${exe}" || exit 1
 
 
   echo_dbg "Cleaning apt cache..."
