@@ -17,11 +17,11 @@ def utils_cmd(cmd):
 class Options:
     def __init__(self):
         self.template_model = {}
-        self.jinja_ext_only = True
+        self.jinja_ext_only = False
         self.sync_command = "rsync -rlptDH --delete %s %s"
         self.env_prefix = "GCF."
-        self.base_config_path = "./config/"
-        self.dump_model_file = None
+        self.base_config_path = "/etc/gcf"
+        self.dump_model_file = "/tmp/gcf-model.json"
         self.targets = []
 
 
@@ -146,7 +146,7 @@ def main():
     parser.add_argument('--sync-cmd', default=options.sync_command, help='Command to sync files from input to output')
     parser.add_argument('--env-prefix', default=options.env_prefix, help='Prefix for env variables')
     parser.add_argument('--base-config-path', default=options.base_config_path, help='Path where configuration templates are stored')
-    parser.add_argument('--dump-model-file', default=options.dump_model_file, help='Dump JSON model to the specified file')
+    parser.add_argument('--dump-model-file', default=options.dump_model_file, help='Dump JSON model to the specified file. Use "none" to avoid dumping the model.')
 
     args = parser.parse_args()
 
@@ -161,7 +161,7 @@ def main():
         options.targets = json.load(targets_file)["targets"]
     options.template_model = generator.build_model(os.environ, options)
 
-    if options.dump_model_file is not None:
+    if options.dump_model_file != "none":
         with open(options.dump_model_file, "w") as f:
             json.dump(options.template_model, f)
 
