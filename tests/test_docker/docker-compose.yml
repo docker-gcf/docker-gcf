@@ -1,0 +1,11 @@
+version: '2.0'
+
+services:
+  apache2:
+    build: ./apache
+    container_name: gcf-test-apache
+    image: gcf-test-apache-image:dev
+    ports:
+      - 8080:80
+    env_file:
+      - env
