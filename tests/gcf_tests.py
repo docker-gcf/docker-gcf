@@ -95,6 +95,36 @@ class GenerateConfigFilesTests(unittest.TestCase):
             }
         }, model)
 
+    def test_build_model_ldap(self):
+        model_dict ={
+                "GCF.ldap.local": "{ \"suffix\": \"dc=ad,dc=sso,dc=example,dc=com\" }",
+                "GCF.ldap.local.ldapAdmin": "{ \"cn\": \"admin\", \"password\": \"admin\" }",
+                "GCF.ldap.local.configAdmin": "{ \"cn\": \"admin\", \"password\": \"admin\" }",
+                "GCF.ldap.remote.suffix": "\"dc=ad,dc=sso,dc=example,dc=com\""
+            }
+
+        generator, options = get_generator()
+        model = generator.build_model(model_dict, options)
+
+        self.assertDictEqual({
+            "ldap": {
+                "local": {
+                    "suffix": "dc=ad,dc=sso,dc=example,dc=com",
+                    "ldapAdmin": {
+                        "cn": "admin",
+                        "password": "admin"
+                    },
+                    "configAdmin": {
+                        "cn": "admin",
+                        "password": "admin"
+                    }
+                },
+                "remote": {
+                    "suffix": "dc=ad,dc=sso,dc=example,dc=com"
+                }
+            }
+        }, model)
+
     def test_simple_file(self):
         with tempfile.TemporaryDirectory() as dirpath:
             generator, options = get_generator("./test_simple_file/config")
