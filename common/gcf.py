@@ -100,7 +100,7 @@ class Generator:
             if env_name.startswith(options.env_prefix):
                 env_value_str = model_dict[env_name]
                 env_value_json = json.loads(env_value_str)
-                env_short_name = env_name[len(options.env_prefix):].lower()
+                env_short_name = env_name[len(options.env_prefix):]
 
                 names = env_short_name.split('.')
                 sub_model = model
