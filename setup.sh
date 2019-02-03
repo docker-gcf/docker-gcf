@@ -1,6 +1,6 @@
 #! /bin/sh
 
-HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/v0.1.0"
+HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/develop"
 
 PKGS_CACHE_UPDATED=0
 DOCKER_UTILS_SHARE_PATH="/usr/local/share/docker-utils"
@@ -51,7 +51,7 @@ debian_pkgs_update()
 
 debian_pkgs_install()
 {
-  apt-get install -y "${@}" || return 1
+  apt-get install --no-install-recommends -y "${@}" || return 1
 }
 
 pkgs_update()
@@ -81,40 +81,17 @@ main()
     exit 1
   fi
 
-  if has_exe wget
-  then
-    HAS_WGET=1
-  else
-    HAS_WGET=0
-  fi
+  pkgs_install ca-certificates wget curl python3 python3-pip rsync jq || exit 1
 
-  if has_exe curl
-  then
-    HAS_CURL=1
-  else
-    HAS_CURL=0
-  fi
+  pip3 install -U argparse jinja2 || exit 1
 
-  if [ "${HAS_WGET}" = "0" ] && [ "${HAS_CURL}" = "0" ]
-  then
-    default_dl="wget"
-    echo_dbg "wget and curl are not available. Installing ${default_dl}..."
-    pkgs_install "${default_dl}" || exit 1
-    unset default_dl
-  else
-    echo_dbg "Found wget and/or curl."
-  fi
+  echo_dbg "Installing pkgs-install..."
+  exe="/usr/local/bin/pkgs-install"
+  dl_file "${HOME_BASE_URL}/debian/pkgs-install" "${exe}" && chmod +x "${exe}" || exit 1
 
-  echo_dbg "Installing apt-get-install..."
-  apti="/usr/local/bin/apt-get-install"
-  dl_file "${HOME_BASE_URL}/debian/apt-get-install" "${apti}" && chmod +x "${apti}" || exit 1
-
-
-  echo_dbg "Creating common dirs..."
-  mkdir -p "${DOCKER_UTILS_SHARE_PATH}" || exit1
-
-  echo_dbg "Installing docker-utils.sh"
-  dl_file "${HOME_BASE_URL}/common/docker-utils.sh" "${DOCKER_UTILS_SHARE_PATH}/docker-utils.sh" || exit 1
+  echo_dbg "Installing gcf..."
+  exe="/usr/local/bin/gcf"
+  dl_file "${HOME_BASE_URL}/debian/gcf.py" "${exe}" && chmod +x "${exe}" || exit 1
 
 
   echo_dbg "Cleaning apt cache..."
