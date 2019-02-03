@@ -1,0 +1,2 @@
+GCF.apache2.hostname="test-hostname.example.com"
+GCF.apache2.vhosts=[{"name": "example.com", "listen": {"ip": "*", "port": "80"}, "aliases": ["example.net","www.example.net","www.example.com"]}, {"name": "intranet.example.com", "listen": {"ip": "*", "port": "80"}, "aliases": ["intranet.example.net"]}, {"name": "test.local", "listen": {"ip": "127.0.0.1", "port": "80"}, "aliases": []}]
