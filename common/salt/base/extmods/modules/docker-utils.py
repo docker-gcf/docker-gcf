@@ -31,8 +31,9 @@ def get_model_from_env(env_dict=os.environ, env_prefix="GCF", env_separator=".")
 def find_all_sls(dir_path):
     sls = []
     for f in os.listdir(dir_path):
-        if f.endswith(".sls") and f != "top.sls":
-            sls.append(f[0:-4])
+        if f.endswith(".sls"):
+            if f != "top.sls":
+                sls.append(f[0:-4])
         else:
             sls.append(f)
     return sls
