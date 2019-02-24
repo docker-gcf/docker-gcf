@@ -1,8 +1,0 @@
-{
-  "targets": [
-    {
-      "input": "apache2.conf",
-      "output": "/usr/local/apache2/conf/httpd.conf"
-    }
-  ]
-}

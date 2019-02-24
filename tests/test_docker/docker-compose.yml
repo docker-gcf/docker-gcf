@@ -5,6 +5,8 @@ services:
     build: ./apache
     container_name: gcf-test-apache
     image: gcf-test-apache-image:dev
+    volumes:
+      - ../../:/docker-utils/
     ports:
       - 8080:80
     env_file:
