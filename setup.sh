@@ -1,9 +1,12 @@
 #! /bin/sh
 
-HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/develop"
+VERSION=v0.1.0
+VERSION=develop
+
+HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/${VERSION}"
+ZIP_URL="https://github.com/robin-thoni/docker-utils/archive/${VERSION}.zip"
 
 PKGS_CACHE_UPDATED=0
-DOCKER_UTILS_SHARE_PATH="/usr/local/share/docker-utils"
 
 echo_dbg()
 {
@@ -81,21 +84,19 @@ main()
     exit 1
   fi
 
-  pkgs_install ca-certificates wget curl python3 python3-pip rsync jq || exit 1
+  pkgs_install ca-certificates wget curl jq zip || exit 1
 
-  pip3 install -U argparse jinja2 || exit 1
+  curl -L https://bootstrap.saltstack.com -o /tmp/bootstrap_salt.sh || exit 1
+  /tmp/bootstrap_salt.sh || exit 1
 
-  echo_dbg "Installing pkgs-install..."
-  exe="/usr/local/bin/pkgs-install"
-  dl_file "${HOME_BASE_URL}/debian/pkgs-install" "${exe}" && chmod +x "${exe}" || exit 1
-
-  echo_dbg "Installing gcf..."
-  exe="/usr/local/bin/gcf"
-  dl_file "${HOME_BASE_URL}/common/gcf.py" "${exe}" && chmod +x "${exe}" || exit 1
+  echo_dbg "Downloading docker-utils archive..."
+  dl_file "${ZIP_URL}" "/tmp/docker-utils.zip" || exit 1
+  cd /tmp && unzip docker-utils.zip || exit 1
+  cp -r docker-utils/debian/bin/* /usr/local/bin/
 
 
-  echo_dbg "Cleaning apt cache..."
-  apt-get clean && rm -rf /var/lib/apt/lists/* || exit 1
+  echo_dbg "Cleaning apt cache and tmp files..."
+  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /tmp/.* || exit 1
 
 }
 

@@ -1,8 +1,0 @@
-{
-  "targets": [
-    {
-      "input": "apache2.conf",
-      "output": "/etc/apache2/apache2.conf"
-    }
-  ]
-}
