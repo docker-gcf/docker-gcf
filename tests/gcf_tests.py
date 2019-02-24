@@ -1,6 +1,9 @@
 import os
 import tempfile
 import unittest
+
+import jsonschema
+
 import common.gcf
 
 
@@ -20,39 +23,74 @@ class GenerateConfigFilesTests(unittest.TestCase):
     def test_build_model_empty(self):
         model_dict = {}
 
-        generator, options = get_generator()
-        model = generator.build_model(model_dict, options)
+        target = common.gcf.Target()
+        target.effective_generate_option.template_model = {}
 
-        self.assertTrue(len(model) == 0)
+        model = common.gcf.Helpers.build_model(model_dict, target)
+
+        self.assertDictEqual({}, model)
+
+    def test_build_model_ignored_keys(self):
+        model_dict = {"test.foo": 42}
+
+        target = common.gcf.Target()
+        target.effective_generate_option.template_model = {}
+        target.effective_generate_option.env_prefix = "GCF."
+
+        model = common.gcf.Helpers.build_model(model_dict, target)
+
+        self.assertDictEqual({}, model)
 
     def test_build_model_base_model(self):
         model_dict = {}
 
-        generator, options = get_generator()
-        options.template_model = {"test": 42}
-        model = generator.build_model(model_dict, options)
+        config_json = {
+            "targets":
+                [
+                    {
+                        "input": "apache2.conf",
+                        "output": "/etc/apache2/apache2.conf"
+                    }
+                ],
+            "template_model": {
+                "test": 42
+            }
+        }
+        jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+        options = common.gcf.Options()
+        common.gcf.Helpers.populate_options(config_json, options)
+        common.gcf.Helpers.build_options({}, options)
+        target = options.targets[0]
 
-        self.assertTrue(len(model) == 1)
-        self.assertTrue("test" in model)
-        self.assertTrue(model["test"] == 42)
+        model = common.gcf.Helpers.build_model(model_dict, target)
 
-    def test_build_model_ignored_keys(self):
-        model_dict = {"test.foo": "42"}
-
-        generator, options = get_generator()
-        model = generator.build_model(model_dict, options)
-
-        self.assertTrue(len(model) == 0)
+        self.assertDictEqual({
+            "test": 42
+        }, model)
 
     def test_build_model_1(self):
         model_dict = {"GCF.test": "42"}
 
-        generator, options = get_generator()
-        model = generator.build_model(model_dict, options)
+        config_json = {
+            "targets":
+                [
+                    {
+                        "input": "apache2.conf",
+                        "output": "/etc/apache2/apache2.conf"
+                    }
+                ]
+        }
+        jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+        options = common.gcf.Options()
+        common.gcf.Helpers.populate_options(config_json, options)
+        common.gcf.Helpers.build_options({}, options)
+        target = options.targets[0]
 
-        self.assertTrue(len(model) == 1)
-        self.assertTrue("test" in model)
-        self.assertTrue(model["test"] == 42)
+        model = common.gcf.Helpers.build_model(model_dict, target)
+
+        self.assertDictEqual({
+            "test": 42
+        }, model)
 
     def test_build_model_2(self):
         model_dict = {
@@ -61,8 +99,22 @@ class GenerateConfigFilesTests(unittest.TestCase):
             "GCF.foo": "{\"bar\": {\"value2\": 42}}"
         }
 
-        generator, options = get_generator()
-        model = generator.build_model(model_dict, options)
+        config_json = {
+            "targets":
+                [
+                    {
+                        "input": "apache2.conf",
+                        "output": "/etc/apache2/apache2.conf"
+                    }
+                ]
+        }
+        jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+        options = common.gcf.Options()
+        common.gcf.Helpers.populate_options(config_json, options)
+        common.gcf.Helpers.build_options({}, options)
+        target = options.targets[0]
+
+        model = common.gcf.Helpers.build_model(model_dict, target)
 
         self.assertDictEqual({
             "test": 42,
@@ -74,6 +126,66 @@ class GenerateConfigFilesTests(unittest.TestCase):
             }
         }, model)
 
+    def test_build_model_3(self):
+        model_dict = {
+            "GCF.var5": "\"env\"",
+            "GCF.var6": "\"env\""
+        }
+
+        config_json = {
+            "targets":
+                [
+                    {
+                        "input": "apache2.conf",
+                        "output": "/etc/apache2/apache2.conf",
+                        "template_model": {
+                            "var3": "target",
+                            "var6": "target",
+                            "var7": "target",
+                            "var8": "target"
+                        }
+                    }
+                ],
+            "template_model": {
+                "var2": "base",
+                "var6": "base",
+                "var7": "base",
+                "var8": "base",
+                "var9": "base"
+            }
+        }
+        jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+        options = common.gcf.Options()
+        options.default_generate_option.template_model = {
+            "var1": "default",
+            "var6": "default",
+            "var7": "default",
+            "var8": "default",
+            "var9": "default"
+        }
+        options.cli_generate_option.template_model = {
+            "var4": "cli",
+            "var6": "cli",
+            "var7": "cli"
+        }
+        common.gcf.Helpers.populate_options(config_json, options)
+        common.gcf.Helpers.build_options({}, options)
+        target = options.targets[0]
+
+        model = common.gcf.Helpers.build_model(model_dict, target)
+
+        self.assertDictEqual({
+            "var1": "default",
+            "var2": "base",
+            "var3": "target",
+            "var4": "cli",
+            "var5": "env",
+            "var6": "env",
+            "var7": "cli",
+            "var8": "target",
+            "var9": "base"
+        }, model)
+
     def test_build_model_overwrite(self):
         model_dict = {
             "GCF.test": "42",
@@ -82,8 +194,22 @@ class GenerateConfigFilesTests(unittest.TestCase):
             "GCF.foo.bar.value2": "24"
         }
 
-        generator, options = get_generator()
-        model = generator.build_model(model_dict, options)
+        config_json = {
+            "targets":
+                [
+                    {
+                        "input": "apache2.conf",
+                        "output": "/etc/apache2/apache2.conf"
+                    }
+                ]
+        }
+        jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+        options = common.gcf.Options()
+        common.gcf.Helpers.populate_options(config_json, options)
+        common.gcf.Helpers.build_options({}, options)
+        target = options.targets[0]
+
+        model = common.gcf.Helpers.build_model(model_dict, target)
 
         self.assertDictEqual({
             "test": 42,
@@ -103,8 +229,22 @@ class GenerateConfigFilesTests(unittest.TestCase):
                 "GCF.ldap.remote.suffix": "\"dc=ad,dc=sso,dc=example,dc=com\""
             }
 
-        generator, options = get_generator()
-        model = generator.build_model(model_dict, options)
+        config_json = {
+            "targets":
+                [
+                    {
+                        "input": "apache2.conf",
+                        "output": "/etc/apache2/apache2.conf"
+                    }
+                ]
+        }
+        jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+        options = common.gcf.Options()
+        common.gcf.Helpers.populate_options(config_json, options)
+        common.gcf.Helpers.build_options({}, options)
+        target = options.targets[0]
+
+        model = common.gcf.Helpers.build_model(model_dict, target)
 
         self.assertDictEqual({
             "ldap": {
@@ -127,10 +267,23 @@ class GenerateConfigFilesTests(unittest.TestCase):
 
     def test_simple_file(self):
         with tempfile.TemporaryDirectory() as dirpath:
-            generator, options = get_generator("./test_simple_file/config")
-            options.template_model = generator.build_model({}, options)
-            options.targets = [{"input": "apache2.conf", "output": os.path.join(dirpath, "apache2.conf")}]
+            config_json = {
+                "targets":
+                    [
+                        {
+                            "input": "apache2.conf",
+                            "output": os.path.join(dirpath, "apache2.conf")
+                        }
+                    ]
+            }
+            jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+            options = common.gcf.Options()
+            options.base_config_path = "./test_simple_file/config"
+            options.dump_model_file = "%s/gcf-model.json" % dirpath
+            common.gcf.Helpers.populate_options(config_json, options)
+            common.gcf.Helpers.build_options({}, options)
 
+            generator = common.gcf.Generator()
             generator.generate_targets(options)
 
             with open(os.path.join(dirpath, "apache2.conf")) as f:
@@ -140,10 +293,24 @@ class GenerateConfigFilesTests(unittest.TestCase):
 
     def test_simple_file_template_jinja_only(self):
         with tempfile.TemporaryDirectory() as dirpath:
-            generator, options = get_generator("./test_simple_file_template/config")
-            options.template_model = generator.build_model({"GCF.host": "\"my-hostname\""}, options)
-            options.targets = [{"input": "apache2.conf", "output": os.path.join(dirpath, "apache2.conf")}]
+            config_json = {
+                "targets":
+                    [
+                        {
+                            "input": "apache2.conf",
+                            "output": os.path.join(dirpath, "apache2.conf"),
+                            "jinja_ext_only": True
+                        }
+                    ]
+            }
+            jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+            options = common.gcf.Options()
+            options.base_config_path = "./test_simple_file_template/config"
+            options.dump_model_file = "%s/gcf-model.json" % dirpath
+            common.gcf.Helpers.populate_options(config_json, options)
+            common.gcf.Helpers.build_options({"GCF.host": "\"my-hostname\""}, options)
 
+            generator = common.gcf.Generator()
             generator.generate_targets(options)
 
             with open(os.path.join(dirpath, "apache2.conf")) as f:
@@ -153,11 +320,24 @@ class GenerateConfigFilesTests(unittest.TestCase):
 
     def test_simple_file_template_all_files(self):
         with tempfile.TemporaryDirectory() as dirpath:
-            generator, options = get_generator("./test_simple_file_template/config")
-            options.jinja_ext_only = False
-            options.template_model = generator.build_model({"GCF.host": "\"my-hostname\""}, options)
-            options.targets = [{"input": "apache2.conf", "output": os.path.join(dirpath, "apache2.conf")}]
+            config_json = {
+                "targets":
+                    [
+                        {
+                            "input": "apache2.conf",
+                            "output": os.path.join(dirpath, "apache2.conf"),
+                            "jinja_ext_only": False
+                        }
+                    ]
+            }
+            jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+            options = common.gcf.Options()
+            options.base_config_path = "./test_simple_file_template/config"
+            options.dump_model_file = "%s/gcf-model.json" % dirpath
+            common.gcf.Helpers.populate_options(config_json, options)
+            common.gcf.Helpers.build_options({"GCF.host": "\"my-hostname\""}, options)
 
+            generator = common.gcf.Generator()
             generator.generate_targets(options)
 
             with open(os.path.join(dirpath, "apache2.conf")) as f:
@@ -167,10 +347,24 @@ class GenerateConfigFilesTests(unittest.TestCase):
 
     def test_simple_file_jinja_template_jinja_only(self):
         with tempfile.TemporaryDirectory() as dirpath:
-            generator, options = get_generator("./test_simple_file_template/config")
-            options.template_model = generator.build_model({"GCF.host": "\"my-hostname\""}, options)
-            options.targets = [{"input": "apache2.conf.jinja", "output": os.path.join(dirpath, "apache2.conf.jinja")}]
+            config_json = {
+                "targets":
+                    [
+                        {
+                            "input": "apache2.conf.jinja",
+                            "output": os.path.join(dirpath, "apache2.conf.jinja"),
+                            "jinja_ext_only": True
+                        }
+                    ]
+            }
+            jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+            options = common.gcf.Options()
+            options.base_config_path = "./test_simple_file_template/config"
+            options.dump_model_file = "%s/gcf-model.json" % dirpath
+            common.gcf.Helpers.populate_options(config_json, options)
+            common.gcf.Helpers.build_options({"GCF.host": "\"my-hostname\""}, options)
 
+            generator = common.gcf.Generator()
             generator.generate_targets(options)
 
             with open(os.path.join(dirpath, "apache2.conf")) as f:
@@ -180,11 +374,24 @@ class GenerateConfigFilesTests(unittest.TestCase):
 
     def test_simple_file_jinja_template_all_files(self):
         with tempfile.TemporaryDirectory() as dirpath:
-            generator, options = get_generator("./test_simple_file_template/config")
-            options.jinja_ext_only = False
-            options.template_model = generator.build_model({"GCF.host": "\"my-hostname\""}, options)
-            options.targets = [{"input": "apache2.conf.jinja", "output": os.path.join(dirpath, "apache2.conf.jinja")}]
+            config_json = {
+                "targets":
+                    [
+                        {
+                            "input": "apache2.conf.jinja",
+                            "output": os.path.join(dirpath, "apache2.conf.jinja"),
+                            "jinja_ext_only": False
+                        }
+                    ]
+            }
+            jsonschema.validate(config_json, common.gcf.CONFIG_SCHEMA)
+            options = common.gcf.Options()
+            options.base_config_path = "./test_simple_file_template/config"
+            options.dump_model_file = "%s/gcf-model.json" % dirpath
+            common.gcf.Helpers.populate_options(config_json, options)
+            common.gcf.Helpers.build_options({"GCF.host": "\"my-hostname\""}, options)
 
+            generator = common.gcf.Generator()
             generator.generate_targets(options)
 
             with open(os.path.join(dirpath, "apache2.conf.jinja")) as f:
