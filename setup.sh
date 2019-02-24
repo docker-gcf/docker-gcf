@@ -1,10 +1,5 @@
 #! /bin/sh
 
-if [ -e /docker-utils/ ]
-then
-    exec /docker-utils/setup.sh
-fi
-
 VERSION=v0.1.0
 VERSION=develop
 

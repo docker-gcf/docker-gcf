@@ -10,6 +10,6 @@ pillar_roots:
   base:
     - /etc/salt/base/pillar/
 
-extension_modules: /etc/salt/base/modules/
+extension_modules: /etc/salt/base/extmods/
 
 clean_dynamic_modules: False
