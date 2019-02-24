@@ -5,7 +5,7 @@ state_output: changes
 file_roots:
   base:
     - /etc/salt/base/states/
-    -
+
 pillar_roots:
   base:
     - /etc/salt/base/pillar/
