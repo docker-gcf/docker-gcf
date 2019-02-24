@@ -84,8 +84,10 @@ main()
     exit 1
   fi
 
+  echo_dbg "Installing basic packages..."
   pkgs_install ca-certificates wget curl jq unzip || exit 1
 
+  echo_dbg "Installing salt..."
   curl -L https://bootstrap.saltstack.com -o /tmp/bootstrap_salt.sh || exit 1
   sh /tmp/bootstrap_salt.sh || exit 1
 
@@ -99,6 +101,7 @@ main()
     cd /tmp && unzip docker-utils.zip
   fi
 
+  echo_dbg "Installing docker-utils files..."
   cd "/tmp/docker-utils-${VERSION}" && \
     cp -r debian/bin/* /usr/local/bin/ && cp -r common/salt/* /etc/salt/ || exit 1
 
