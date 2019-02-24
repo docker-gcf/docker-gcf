@@ -35,6 +35,7 @@ def find_all_sls(dir_path):
             sls.append(f[0:-4])
         else:
             sls.append(f)
+    return sls
 
 
 def find_all_pillars():
