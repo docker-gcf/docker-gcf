@@ -2,7 +2,7 @@ import json
 import os
 
 
-def get_model_from_env(env_dict: dict = os.environ, env_prefix: str = "GCF", env_separator: str = "."):
+def get_model_from_env(env_dict=os.environ, env_prefix="GCF", env_separator="."):
     model = {}
     for env_name in env_dict:
         full_prefix = "%s%s" % (env_prefix, env_separator)

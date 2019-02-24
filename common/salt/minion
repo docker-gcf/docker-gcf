@@ -11,3 +11,5 @@ pillar_roots:
     - /etc/salt/base/pillar/
 
 extension_modules: /etc/salt/base/modules/
+
+clean_dynamic_modules: False
