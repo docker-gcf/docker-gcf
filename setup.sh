@@ -1,5 +1,10 @@
 #! /bin/sh
 
+if [ -e /docker-utils/ ]
+then
+    exec /docker-utils/setup.sh
+fi
+
 VERSION=v0.1.0
 VERSION=develop
 
@@ -106,7 +111,7 @@ main()
     cp -r debian/bin/* /usr/local/bin/ && cp -r common/salt/* /etc/salt/ || exit 1
 
   echo_dbg "Cleaning apt cache and tmp files..."
-  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /tmp/.* || exit 1
+  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* || exit 1
 
 }
 
