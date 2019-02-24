@@ -8,7 +8,7 @@ file_roots:
 
 pillar_roots:
   base:
-    - /etc/salt/base/pillar/
+    - /etc/salt/base/pillars/
 
 extension_modules: /etc/salt/base/extmods/
 

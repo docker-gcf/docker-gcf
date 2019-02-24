@@ -26,3 +26,20 @@ def get_model_from_env(env_dict=os.environ, env_prefix="GCF", env_separator=".")
                 sub_model[names[-1]] = env_value_json
 
     return model
+
+
+def find_all_sls(dir_path):
+    sls = []
+    for f in os.listdir(dir_path):
+        if f.endswith(".sls") and f != "top.sls":
+            sls.append(f[0:-4])
+        else:
+            sls.append(f)
+
+
+def find_all_pillars():
+    return find_all_sls("/etc/salt/base/pillars/")
+
+
+def find_all_states():
+    return find_all_sls("/etc/salt/base/states/")
