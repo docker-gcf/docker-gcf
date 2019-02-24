@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+salt-call --local state.apply || exit 1
