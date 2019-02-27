@@ -22,8 +22,6 @@ def get_model_from_env(env_dict=os.environ, env_prefix="GCF", env_separator=".")
             if isinstance(env_value_json, dict):
                 existing = sub_model[names[-1]] if names[-1] in sub_model else {}
                 sub_model[names[-1]] = __salt__['slsutil.merge'](existing, env_value_json)
-            elif isinstance(env_value_json, unicode):
-                sub_model[names[-1]] = env_value_json.encode("ascii")
             else:
                 sub_model[names[-1]] = env_value_json
 

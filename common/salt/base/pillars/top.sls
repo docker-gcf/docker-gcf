@@ -1,2 +1,2 @@
 base:
-    '*': {{ salt['docker-utils.find_all_pillars']() }}
+    '*': {{ salt['docker-utils.find_all_pillars']() | yaml }}
