@@ -4,12 +4,14 @@ Dockerfile (replace 'vx.y.z' with actual version):
 ``` Dockerfile
 ADD https://raw.githubusercontent.com/robin-thoni/docker-utils/vx.y.z/setup.sh /tmp/docker-utils-setup.sh
 RUN sh /tmp/docker-utils-setup.sh
+ENTRYPOINT ["gcf-entrypoint"]
+
+RUN pkgs-install my-program
+
 COPY ./config /etc/salt/base/
 COPY ./bin /usr/local/bin/
 
-RUN pkgs-install my-program
-# [...]
-ENTRYPOINT ["run.sh"]
+CMD ["run.sh"]
 ```
 
 run.sh:
