@@ -1,10 +1,12 @@
 #! /bin/sh
 
-VERSION=v1.3.0
+VERSION_PREFIX=v
+VERSION=1.3.0
+#VERSION_PREFIX=
 #VERSION=develop
 
-HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/${VERSION}"
-ZIP_URL="https://github.com/robin-thoni/docker-utils/archive/${VERSION}.zip"
+HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/${VERSION_PREFIX}${VERSION}"
+ZIP_URL="https://github.com/robin-thoni/docker-utils/archive/${VERSION_PREFIX}${VERSION}.zip"
 
 PKGS_CACHE_UPDATED=0
 
@@ -102,7 +104,7 @@ main()
   fi
 
   echo_dbg "Installing docker-utils files..."
-  cd "/tmp/docker-utils-*" && \
+  cd "/tmp/docker-utils-${VERSION}" && \
     cp -r debian/bin/* /usr/local/bin/ && cp -r common/salt/* /etc/salt/ || exit 1
 
   echo_dbg "Cleaning apt cache and tmp files..."
