@@ -102,7 +102,7 @@ main()
   fi
 
   echo_dbg "Installing docker-utils files..."
-  cd "/tmp/docker-utils-${VERSION}" && \
+  cd "/tmp/docker-utils-*" && \
     cp -r debian/bin/* /usr/local/bin/ && cp -r common/salt/* /etc/salt/ || exit 1
 
   echo_dbg "Cleaning apt cache and tmp files..."
