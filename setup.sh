@@ -1,7 +1,7 @@
 #! /bin/sh
 
 VERSION=v1.3.0
-VERSION=develop
+#VERSION=develop
 
 HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/${VERSION}"
 ZIP_URL="https://github.com/robin-thoni/docker-utils/archive/${VERSION}.zip"
