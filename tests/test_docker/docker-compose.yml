@@ -1,13 +1,17 @@
-version: '2.0'
+version: '3.7'
+
+x-common: &common
+#  restart: unless-stopped
+  env_file:
+    - env
+  environment:
+    - "GCF_DEBUG_SHOW_MODEL_JSON=1"
 
 services:
   apache2:
+    << : *common
     build: ./apache
     container_name: gcf-test-apache
     image: gcf-test-apache-image:dev
-    volumes:
-      - ../../:/docker-utils/
     ports:
-      - 8080:80
-    env_file:
-      - env
+      - "127.0.0.1:8080:80"
