@@ -1,6 +1,5 @@
 #! /bin/sh
 
-PKGS_CACHE_UPDATED=0
 BASE_DIR=${BASE_DIR:="$(dirname "${0}")"}
 
 echo_dbg()
