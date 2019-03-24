@@ -64,7 +64,7 @@ main()
 
     echo_dbg "Installing salt..."
     curl -L https://bootstrap.saltstack.com -o /tmp/bootstrap_salt.sh || exit 1
-    BS_SALT_MASTER_ADDRESS=not-a-salt-server sh /tmp/bootstrap_salt.sh -X || exit 1
+    sh /tmp/bootstrap_salt.sh -X -A '' stable 2019.2.0 || exit 1
 
     echo_dbg "Cleaning up..."
     rm -rf /tmp/* || exit 1
