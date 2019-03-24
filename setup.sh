@@ -1,9 +1,9 @@
 #! /bin/sh
 
-VERSION_PREFIX=v
-VERSION=1.4.0
-#VERSION_PREFIX=
-#VERSION=develop
+#VERSION_PREFIX=v
+#VERSION=1.4.0
+VERSION_PREFIX=
+VERSION=develop
 
 HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/${VERSION_PREFIX}${VERSION}"
 ZIP_URL="https://github.com/robin-thoni/docker-utils/archive/${VERSION_PREFIX}${VERSION}.zip"
