@@ -79,7 +79,7 @@ pkgs_install()
 main()
 {
     echo_dbg "Installing basic packages..."
-    pkgs_install ca-certificates wget curl jq unzip
+    pkgs_install ca-certificates wget curl unzip
 
     echo_dbg "Downloading docker-utils archive..."
     dl_file "${ZIP_URL}" "/tmp/docker-utils.zip" || exit 1
