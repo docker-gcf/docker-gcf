@@ -86,7 +86,7 @@ main()
     cd /tmp && unzip docker-utils.zip || exit 1
     mv "/tmp/docker-utils-${VERSION}" "/tmp/docker-utils" || exit 1
 
-    BASE_DIR="/tmp/docker-utils" exec sh /tmp/docker-utils/src/setup.sh
+    BASE_DIR="/tmp/docker-utils/src" exec sh /tmp/docker-utils/src/setup.sh
 }
 
 main

@@ -51,19 +51,20 @@ main()
         exit 1
     fi
     echo_dbg "Working dir: $(pwd)"
+    echo_dbg "Base dir: ${BASE_DIR}"
 
     echo_dbg "Installing docker-utils files..."
     mkdir -p "/etc/salt/" && \
-    cp -r "${BASE_DIR}"/src/debian/bin/* /usr/local/bin/ && \
-    cp -r "${BASE_DIR}"/src/common/bin/* /usr/local/bin/ && \
-    cp -r "${BASE_DIR}"/src/common/salt/* /etc/salt/ || exit 1
+    cp -r "${BASE_DIR}"/debian/bin/* /usr/local/bin/ && \
+    cp -r "${BASE_DIR}"/common/bin/* /usr/local/bin/ && \
+    cp -r "${BASE_DIR}"/common/salt/* /etc/salt/ || exit 1
 
     echo_dbg "Installing basic packages..."
-    pkgs-install ca-certificates wget curl jq unzip || exit 1
+    pkgs-install ca-certificates wget curl jq unzip ssmtp || exit 1
 
     echo_dbg "Installing salt..."
     curl -L https://bootstrap.saltstack.com -o /tmp/bootstrap_salt.sh || exit 1
-    BS_SALT_MASTER_ADDRESS=not-a-salt-server sh /tmp/bootstrap_salt.sh || exit 1
+    BS_SALT_MASTER_ADDRESS=not-a-salt-server sh /tmp/bootstrap_salt.sh -X || exit 1
 
     echo_dbg "Cleaning up..."
     rm -rf /tmp/* || exit 1
