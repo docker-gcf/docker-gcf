@@ -1,2 +1,2 @@
 base:
-    '*': {{ salt['docker-utils.find_all_states']() | yaml }}
+    '*': {{ salt['docker-gcf.find_all_states']() | yaml }}

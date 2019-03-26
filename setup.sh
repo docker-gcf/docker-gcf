@@ -5,8 +5,8 @@
 VERSION_PREFIX=
 VERSION=develop
 
-HOME_BASE_URL="https://raw.githubusercontent.com/robin-thoni/docker-utils/${VERSION_PREFIX}${VERSION}"
-ZIP_URL="https://github.com/robin-thoni/docker-utils/archive/${VERSION_PREFIX}${VERSION}.zip"
+HOME_BASE_URL="https://raw.githubusercontent.com/docker-gcf/docker-gcf/${VERSION_PREFIX}${VERSION}"
+ZIP_URL="https://github.com/docker-gcf/docker-gcf/archive/${VERSION_PREFIX}${VERSION}.zip"
 
 PKGS_CACHE_UPDATED=0
 
@@ -81,12 +81,12 @@ main()
     echo_dbg "Installing basic packages..."
     pkgs_install ca-certificates wget curl unzip
 
-    echo_dbg "Downloading docker-utils archive..."
-    dl_file "${ZIP_URL}" "/tmp/docker-utils.zip" || exit 1
-    cd /tmp && unzip docker-utils.zip || exit 1
-    mv "/tmp/docker-utils-${VERSION}" "/tmp/docker-utils" || exit 1
+    echo_dbg "Downloading docker-gcf archive..."
+    dl_file "${ZIP_URL}" "/tmp/docker-gcf.zip" || exit 1
+    cd /tmp && unzip docker-gcf.zip || exit 1
+    mv "/tmp/docker-gcf-${VERSION}" "/tmp/docker-gcf" || exit 1
 
-    BASE_DIR="/tmp/docker-utils/src" exec sh /tmp/docker-utils/src/setup.sh
+    BASE_DIR="/tmp/docker-gcf/src" exec sh /tmp/docker-gcf/src/setup.sh
 }
 
 main

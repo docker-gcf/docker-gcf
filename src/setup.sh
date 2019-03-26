@@ -53,7 +53,7 @@ main()
     echo_dbg "Working dir: $(pwd)"
     echo_dbg "Base dir: ${BASE_DIR}"
 
-    echo_dbg "Installing docker-utils files..."
+    echo_dbg "Installing docker-gcf files..."
     mkdir -p "/etc/salt/" && \
     cp -r "${BASE_DIR}"/debian/bin/* /usr/local/bin/ && \
     cp -r "${BASE_DIR}"/common/bin/* /usr/local/bin/ && \

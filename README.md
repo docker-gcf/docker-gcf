@@ -2,8 +2,8 @@ Usage:
 
 Dockerfile (replace 'vx.y.z' with actual version):
 ``` Dockerfile
-ADD https://raw.githubusercontent.com/robin-thoni/docker-utils/vx.y.z/setup.sh /tmp/docker-utils-setup.sh
-RUN sh /tmp/docker-utils-setup.sh
+ADD https://raw.githubusercontent.com/docker-gcf/docker-gcf/vx.y.z/setup.sh /tmp/docker-gcf-setup.sh
+RUN sh /tmp/docker-gcf-setup.sh
 ENTRYPOINT ["gcf-entrypoint"]
 CMD ["run.sh"]
 
