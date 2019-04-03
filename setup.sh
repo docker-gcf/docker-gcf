@@ -5,7 +5,6 @@ VERSION=1.5.0
 #VERSION_PREFIX=
 #VERSION=develop
 
-HOME_BASE_URL="https://raw.githubusercontent.com/docker-gcf/docker-gcf/${VERSION_PREFIX}${VERSION}"
 ZIP_URL="https://github.com/docker-gcf/docker-gcf/archive/${VERSION_PREFIX}${VERSION}.zip"
 
 PKGS_CACHE_UPDATED=0
@@ -22,36 +21,36 @@ echo_err()
 
 has_exe()
 {
-  exe_name="${1}"
+  local exe_name="${1}"
+
   if which "${exe_name}" 2>&1 >/dev/null
   then
-    res=0
+    return 0
   else
-    res=1
+    return 1
   fi
-
-  return "${res}"
 }
 
 dl_file()
 {
-    file_url="${1}"
-    file_path="${2}"
+    local file_url="${1}"
+    local file_path="${2}"
+
     if has_exe wget
     then
-        wget "${file_url}" -O "${file_path}"
+        wget "${file_url}" -O "${file_path}" || return 1
     elif has_exe curl
     then
-        curl "${file_url}" -o "${file_path}"
+        curl "${file_url}" -o "${file_path}" || return 1
     else
-        echo "No backend for download" >&2
+        echo_err "No backend for download"
         return 1
     fi
 }
 
 debian_pkgs_update()
 {
-  apt-get update || exit 1
+  apt-get update || return 1
 }
 
 debian_pkgs_install()
@@ -61,7 +60,7 @@ debian_pkgs_install()
 
 pkgs_update()
 {
-  debian_pkgs_update
+  debian_pkgs_update || return 1
 }
 
 pkgs_install()
@@ -73,20 +72,20 @@ pkgs_install()
     PKGS_CACHE_UPDATED=1
   fi
 
-  debian_pkgs_install "${@}"
+  debian_pkgs_install "${@}" || return 1
 }
 
 main()
 {
     echo_dbg "Installing basic packages..."
-    pkgs_install ca-certificates wget curl unzip
+    pkgs_install ca-certificates wget curl unzip || exit 1
 
     echo_dbg "Downloading docker-gcf archive..."
     dl_file "${ZIP_URL}" "/tmp/docker-gcf.zip" || exit 1
     cd /tmp && unzip docker-gcf.zip || exit 1
     mv "/tmp/docker-gcf-${VERSION}" "/tmp/docker-gcf" || exit 1
 
-    BASE_DIR="/tmp/docker-gcf/src" exec sh /tmp/docker-gcf/src/setup.sh
+    BASE_DIR="/tmp/docker-gcf" exec sh /tmp/docker-gcf/src/setup.sh "${@}"
 }
 
-main
+main "${@}"
