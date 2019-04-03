@@ -1,7 +1,7 @@
 FROM httpd:2.4
 
 ADD https://raw.githubusercontent.com/docker-gcf/docker-gcf/develop/setup.sh /tmp/docker-gcf-setup.sh
-RUN sh /tmp/docker-gcf-setup.sh
+RUN sh /tmp/docker-gcf-setup.sh -m apache2=develop
 ENTRYPOINT ["gcf-entrypoint"]
 CMD ["run.sh"]
 

@@ -1,9 +1,9 @@
 #! /bin/sh
 
-VERSION_PREFIX=v
-VERSION=1.5.0
-#VERSION_PREFIX=
-#VERSION=develop
+#VERSION_PREFIX=v
+#VERSION=1.5.0
+VERSION_PREFIX=
+VERSION=develop
 
 ZIP_URL="https://github.com/docker-gcf/docker-gcf/archive/${VERSION_PREFIX}${VERSION}.zip"
 
