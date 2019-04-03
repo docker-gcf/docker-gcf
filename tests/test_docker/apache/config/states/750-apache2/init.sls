@@ -1,7 +1,10 @@
 apache2-config:
-  file.managed:
+  file.blockreplace:
     - name: /usr/local/apache2/conf/httpd.conf
-    - source: salt://apache2/apache2.conf
+    - append_if_not_found: True
+    - marker_start: "#-- start managed zone test_docker-apache2 --"
+    - marker_end: "#-- end managed zone test_docker-apache2 --"
+    - source: salt://750-apache2/apache2.conf
     - template: jinja
 
 {% for vhost in salt['pillar.get']("model:apache2:vhosts") %}
