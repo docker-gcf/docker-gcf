@@ -1,3 +1,3 @@
-#! /bin/bash
+#! /bin/sh
 
 salt-call --skip-grains --local state.apply || exit 1
