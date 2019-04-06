@@ -15,12 +15,6 @@ then
     cat /tmp/gcf-model.json
 fi
 
-if which rsyslogd 2>&1 1>/dev/null
-then
-    rsyslogd &
-    sleep 1
-fi
-
 if [ "${GCF_DEBUG_NO_RUN}" == "1" ]
 then
     echo "==== Not running cmd"
