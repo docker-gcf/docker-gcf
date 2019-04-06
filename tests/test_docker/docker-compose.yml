@@ -11,7 +11,8 @@ services:
   apache2:
     << : *common
     build: ./apache
-    container_name: gcf-test-apache
-    image: gcf-test-apache-image:dev
     ports:
       - "127.0.0.1:8080:80"
+  rsyslog:
+    << : *common
+    build: ./rsyslog
