@@ -1,0 +1,9 @@
+#! /bin/sh
+
+echo "Simulating initialization latency..."
+
+sleep 5
+
+echo "Running nc server..."
+
+nc -l 0.0.0.0 -p 4242

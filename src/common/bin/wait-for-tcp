@@ -3,7 +3,13 @@
 
 cmdname=$(basename $0)
 
-echoerr() { if [[ $QUIET -ne 1 ]]; then echo "$@" 1>&2; fi }
+echoerr()
+{
+    if [[ $QUIET -ne 1 ]]
+    then
+        echo "$(date +'%Y-%m-%d %H:%M:%S') $@" 1>&2
+    fi
+}
 
 usage()
 {

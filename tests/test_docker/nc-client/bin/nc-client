@@ -1,0 +1,5 @@
+#! /bin/sh
+
+echo "Client is up" | nc nc-server -p 4242
+
+sleep 6

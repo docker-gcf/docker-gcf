@@ -8,11 +8,13 @@ x-common: &common
     - "GCF_DEBUG_SHOW_MODEL_JSON=1"
 
 services:
-  apache2:
+  nc-server:
     << : *common
-    build: ./apache
+    build: ./nc-server
     ports:
-      - "127.0.0.1:8080:80"
-  rsyslog:
+      - "0.0.0.0:4242:4242/tcp"
+  nc-client:
     << : *common
-    build: ./rsyslog
+    build: ./nc-client
+    links:
+      - nc-server

@@ -1,11 +1,9 @@
-FROM httpd:2.4
+FROM debian:stretch
 
 ADD https://raw.githubusercontent.com/docker-gcf/docker-gcf/develop/setup.sh /tmp/docker-gcf-setup.sh
-RUN sh /tmp/docker-gcf-setup.sh -m apache2=develop
+RUN sh /tmp/docker-gcf-setup.sh
 ENTRYPOINT ["gcf-entrypoint"]
-CMD ["run.sh"]
-
-#RUN pkgs-install dependency
+CMD ["supervisord", "-n"]
 
 COPY ./bin /usr/local/bin/
 COPY ./config /etc/salt/base/

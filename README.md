@@ -5,7 +5,7 @@ Dockerfile (replace 'vx.y.z' with actual version):
 ADD https://raw.githubusercontent.com/docker-gcf/docker-gcf/vx.y.z/setup.sh /tmp/docker-gcf-setup.sh
 RUN sh /tmp/docker-gcf-setup.sh
 ENTRYPOINT ["gcf-entrypoint"]
-CMD ["run.sh"]
+CMD ["supervisord", "-n"]
 
 RUN pkgs-install my-program
 
