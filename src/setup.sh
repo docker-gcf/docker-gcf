@@ -57,7 +57,7 @@ install_pkgs()
 {
     echo_dbg "Installing basic packages..."
 
-    pkgs-install ca-certificates wget curl gawk grep jq unzip ssmtp || return 1
+    pkgs-install ca-certificates wget curl gawk grep jq unzip ssmtp supervisor || return 1
 }
 
 install_salt()
