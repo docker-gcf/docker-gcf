@@ -57,7 +57,12 @@ install_pkgs()
 {
     echo_dbg "Installing basic packages..."
 
-    pkgs-install ca-certificates wget curl gawk grep jq unzip ssmtp supervisor || return 1
+    local deps_setup="ca-certificates wget curl gawk grep unzip"
+    local deps_runtime_utils="jq ssmtp"
+    local deps_runtime_main="supervisor"
+    local deps_wait_for_tcp="netcat coreutils"
+
+    pkgs-install ${deps_setup} ${deps_runtime_utils} ${deps_runtime_main} ${deps_wait_for_tcp} || return 1
 }
 
 install_salt()
