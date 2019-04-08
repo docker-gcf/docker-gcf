@@ -60,7 +60,7 @@ install_pkgs()
     local deps_setup="ca-certificates wget curl gawk grep unzip"
     local deps_runtime_utils="jq ssmtp"
     local deps_runtime_main="supervisor"
-    local deps_wait_for_tcp="netcat coreutils"
+    local deps_wait_for_tcp="netcat-openbsd coreutils"
 
     pkgs-install ${deps_setup} ${deps_runtime_utils} ${deps_runtime_main} ${deps_wait_for_tcp} || return 1
 }
