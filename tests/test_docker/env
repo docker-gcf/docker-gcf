@@ -1,9 +1,7 @@
 TZ=Europe/London
 
 GCF__common__ssmtp__extraConfig__root="root@example.com"
-GCF__common__ssmtp__extraConfig__mailhub="172.17.0.1"
 GCF__common__ssmtp__extraConfig__rewriteDomain="example.com"
-GCF__common__ssmtp__extraConfig__FromLineOverride="YES"
 
 GCF__apache2__hostname="test-hostname.example.com"
 GCF__apache2__vhosts=[{"name": "example.com", "listen": {"ip": "*", "port": 80}, "aliases": ["example.net","www.example.net","www.example.com", "ê.example.com"]}, {"name": "intranet.example.com", "listen": {"ip": "*", "port": 80}, "aliases": ["intranet.example.net"]}, {"name": "test.local", "listen": {"ip": "127.0.0.1", "port": 80}, "aliases": []}]
