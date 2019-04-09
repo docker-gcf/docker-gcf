@@ -1,9 +1,11 @@
 #! /bin/sh
 
+port="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.port)"
+
 echo "Simulating initialization latency..."
 
 sleep 5
 
 echo "Running nc server..."
 
-nc -l 0.0.0.0 -p 4242
+nc -l 0.0.0.0 -p "${port}" -k | ts '%Y-%m-%d %H:%M:%S'

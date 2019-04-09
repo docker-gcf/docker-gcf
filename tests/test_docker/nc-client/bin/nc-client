@@ -1,5 +1,10 @@
 #! /bin/sh
 
-echo "Client is up" | nc nc-server -p 4242
+host="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.host)"
+port="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.port)"
 
-sleep 6
+while :
+do
+    echo "Client is up" | nc -q 0 "${host}" "${port}"
+    sleep 5
+done

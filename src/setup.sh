@@ -58,7 +58,7 @@ install_pkgs()
     echo_dbg "Installing basic packages..."
 
     local deps_setup="ca-certificates wget curl gawk grep unzip"
-    local deps_runtime_utils="jq ssmtp"
+    local deps_runtime_utils="jq ssmtp moreutils"
     local deps_runtime_main="supervisor"
     local deps_wait_for_tcp="netcat-openbsd coreutils"
 
