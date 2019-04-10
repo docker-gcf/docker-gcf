@@ -39,7 +39,7 @@ wait_for()
     while :
     do
         if [[ $ISBUSY -eq 1 ]]; then
-            nc -z $HOST $PORT
+            nc -z $HOST $PORT 2>&1 >/dev/null
             result=$?
         else
             (echo > /dev/tcp/$HOST/$PORT) >/dev/null 2>&1
@@ -59,9 +59,9 @@ wait_for_wrapper()
 {
     # In order to support SIGINT during timeout: http://unix.stackexchange.com/a/57692
     if [[ $QUIET -eq 1 ]]; then
-        timeout $BUSYTIMEFLAG $TIMEOUT $0 --quiet --child --host=$HOST --port=$PORT --timeout=$TIMEOUT &
+        timeout $BUSYTIMEFLAG $TIMEOUT $0 --quiet --child --host=$HOST --port=$PORT --timeout=$TIMEOUT 2>&1 >/dev/null &
     else
-        timeout $BUSYTIMEFLAG $TIMEOUT $0 --child --host=$HOST --port=$PORT --timeout=$TIMEOUT &
+        timeout $BUSYTIMEFLAG $TIMEOUT $0 --child --host=$HOST --port=$PORT --timeout=$TIMEOUT 2>&1 >/dev/null &
     fi
     PID=$!
     trap "kill -INT -$PID" INT
