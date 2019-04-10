@@ -1,11 +1,18 @@
 #! /bin/sh
 
+strftime_format="$(cat /tmp/gcf-model.json | jq -r .gcf.logs.ts.strftime)"
+
+mts()
+{
+    ts "${strftime_format}"
+}
+
 port="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.port)"
 
-echo "Simulating initialization latency..."
+echo "Simulating initialization latency..." | mts
 
 sleep 5
 
-echo "Running nc server..."
+echo "Running nc server..." | mts
 
-nc -l 0.0.0.0 -p "${port}" -k | ts '%Y-%m-%d %H:%M:%S'
+nc -l 0.0.0.0 -p "${port}" -k | mts
