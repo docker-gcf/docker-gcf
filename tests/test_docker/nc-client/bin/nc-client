@@ -5,6 +5,7 @@ port="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.port)"
 
 while :
 do
+    logger "Sending ping to server"
     echo "Client is up" | nc -q 0 "${host}" "${port}"
     sleep 5
 done
