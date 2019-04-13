@@ -2,13 +2,12 @@
 #   Use this script to test if a given TCP host/port are available
 
 cmdname=$(basename $0)
-strftime_format="$(cat /tmp/gcf-model.json | jq -r .gcf.logs.ts.strftime)"
 
 echoerr()
 {
     if [[ $QUIET -ne 1 ]]
     then
-        echo "$(date +"${strftime_format}") $@" 1>&2
+        echo "$@" 1>&2
     fi
 }
 
