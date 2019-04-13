@@ -9,10 +9,10 @@ mts()
 
 port="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.port)"
 
-echo "Simulating initialization latency..." | mts
+echo "Simulating initialization latency..." 2>&1 | mts
 
 sleep 5
 
-echo "Running nc server..." | mts
+echo "Running nc server..." 2>&1 | mts
 
-nc -l 0.0.0.0 -p "${port}" -k | mts
+nc -l 0.0.0.0 -p "${port}" -k 2>&1 | mts
