@@ -7,7 +7,8 @@
     "stdout_logfile": "syslog",
     "stdout_logfile_maxbytes": 0,
     "stderr_logfile": "syslog",
-    "stderr_logfile_maxbytes": 0
+    "stderr_logfile_maxbytes": 0,
+    "stopsignal": "INT"
   },
   "wrapper": None
 } %}
