@@ -58,14 +58,13 @@ install_pkgs()
     echo_dbg "Installing basic packages..."
 
     local deps_setup="ca-certificates wget curl gawk grep unzip"
-    local deps_runtime_utils="jq ssmtp moreutils locales"
+    local deps_runtime_utils="jq ssmtp moreutils"
     local deps_runtime_main="supervisor rsyslog"
     local deps_wait_for_tcp="netcat-openbsd coreutils"
 
     pkgs-install ${deps_setup} ${deps_runtime_utils} ${deps_runtime_main} ${deps_wait_for_tcp} || return 1
 
-    locale-gen C && \
-    update-locale LANG=C || return 1
+    touch /etc/default/locale
 }
 
 install_salt()
