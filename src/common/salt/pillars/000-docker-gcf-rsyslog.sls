@@ -7,3 +7,4 @@ gcf:
           priority: 100
           stdout_logfile: /dev/stdout
           stderr_logfile: /dev/stderr
+          stopsignal: TERM
