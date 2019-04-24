@@ -1,7 +1,10 @@
 TZ=Europe/London
 
+GCF={"test": 42}
+
 GCF__common__ssmtp__extraConfig__root="root@example.com"
 GCF__common__ssmtp__extraConfig__rewriteDomain="example.com"
+
 
 GCF__nc_server__host="nc-server"
 GCF__nc_server__port=4242
