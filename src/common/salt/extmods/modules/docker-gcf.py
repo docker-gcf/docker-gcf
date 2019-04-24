@@ -6,7 +6,7 @@ def get_model_from_env(env_dict=os.environ, env_prefix="GCF", env_separator="__"
     model = {}
     for env_name in env_dict:
         full_prefix = "%s%s" % (env_prefix, env_separator)
-        if env_name.startswith(full_prefix):
+        if env_name.startswith(full_prefix) or env_name == env_prefix:
             env_value_str = env_dict[env_name]
             env_value_json = json.loads(env_value_str)
             env_short_name = env_name[len(full_prefix):]
