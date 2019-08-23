@@ -1,6 +1,10 @@
 import json
 import os
 
+BASE_DIR = "/etc/salt/base"
+PILLARS_DIR = os.path.join(BASE_DIR, "pillars")
+STATES_DIR = os.path.join(BASE_DIR, "states")
+
 
 def get_model_from_env(env_dict=os.environ, env_prefix="GCF", env_separator="__"):
     model = {}
@@ -47,8 +51,8 @@ def find_all_sls(dir_path):
 
 
 def find_all_pillars():
-    return find_all_sls("/etc/salt/base/pillars/")
+    return [os.path.join(PILLARS_DIR, p + ".sls") for p in find_all_sls(PILLARS_DIR)]
 
 
 def find_all_states():
-    return find_all_sls("/etc/salt/base/states/")
+    return find_all_sls(STATES_DIR)

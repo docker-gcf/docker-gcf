@@ -6,9 +6,8 @@ file_roots:
   base:
     - /etc/salt/base/states/
 
-pillar_roots:
-  base:
-    - /etc/salt/base/pillars/
+ext_pillar:
+  - stack: /etc/salt/base/stack.sls
 
 extension_modules: /etc/salt/base/extmods/
 
