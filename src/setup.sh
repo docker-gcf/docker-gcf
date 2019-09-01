@@ -97,6 +97,10 @@ install_gcf_module_folder()
     install_folder "${folder_path}/src/common/salt/" /etc/salt/base/ && \
     install_folder "${folder_path}/src/common/bin/" /usr/local/bin/ && \
     install_folder "${folder_path}/src/debian/bin/" /usr/local/bin/ || return 1
+
+    folder_name="$(basename "${folder_path}")"
+    rm -r "/usr/local/src/${folder_name}" && \
+    mv "${folder_path}" /usr/local/src/ || return 1
 }
 
 install_gcf_module_zip()
@@ -151,7 +155,8 @@ install_gcf_modules()
                 zip_url="https://github.com/docker-gcf/module-${module_name}/archive/${module_version_prefix}${module_version}.zip"
             fi
             dl_file "${zip_url}" "${zip_path}" && \
-            install_gcf_module_zip "${zip_path}" || return 1
+            install_gcf_module_zip "${zip_path}" && \
+            rm "${zip_path}" || return 1
         fi
 
 
