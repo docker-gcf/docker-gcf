@@ -85,7 +85,7 @@ main()
     cd /tmp && unzip docker-gcf.zip && rm docker-gcf.zip || exit 1
     mv "/tmp/docker-gcf-${VERSION}" "/usr/local/src/docker-gcf" || exit 1
 
-    BASE_DIR="/usr/local/src/docker-gcf" exec sh /usr/local/src/docker-gcf/src/setup.sh -gpsn "${@}"
+    exec sh /usr/local/src/docker-gcf/src/setup.sh -gpsn "${@}"
 }
 
 main "${@}"
