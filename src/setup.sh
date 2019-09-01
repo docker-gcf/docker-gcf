@@ -72,7 +72,8 @@ install_salt()
     echo_dbg "Installing salt..."
 
     curl -L https://bootstrap.saltstack.com -o /tmp/bootstrap_salt.sh && \
-    sh /tmp/bootstrap_salt.sh -X stable 2019.2.0 || return 1
+    sh /tmp/bootstrap_salt.sh -X stable 2019.2.0 && \
+    rm -f /tmp/bootstrap_salt.sh /tmp/bootstrap-salt.log || return 1
 }
 
 install_folder()
