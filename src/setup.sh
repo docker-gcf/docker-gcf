@@ -161,10 +161,10 @@ install_gcf_modules()
 main()
 {
     local modules=${BASE_MODULES}
-    local flag_no_install_gcf=0
-    local flag_no_install_pkgs=0
-    local flag_no_install_salt=0
-    local flag_no_install_modules=0
+    local flag_install_gcf=0
+    local flag_install_pkgs=0
+    local flag_install_salt=0
+    local flag_install_modules=0
 
     if has_exe apt-get
     then
@@ -174,23 +174,23 @@ main()
         exit 1
     fi
 
-    while getopts 'm:spg' c
+    while getopts 'm:gpsn' c
     do
         case "${c}" in
             m)
                 modules="${modules} ${OPTARG}"
             ;;
             g)
-                flag_no_install_gcf=1
+                flag_install_gcf=1
             ;;
             p)
-                flag_no_install_pkgs=1
+                flag_install_pkgs=1
             ;;
             s)
-                flag_no_install_salt=1
+                flag_install_salt=1
             ;;
             n)
-                flag_no_install_modules=1
+                flag_install_modules=1
             ;;
             *)
                 echo_err "Usage error"
@@ -201,22 +201,22 @@ main()
     echo_dbg "Working dir: $(pwd)"
     echo_dbg "Base dir: ${BASE_DIR}"
 
-    if [ "${flag_no_install_gcf}" = "0" ]
+    if [ "${flag_install_gcf}" = "1" ]
     then
         install_gcf || exit 1
     fi
 
-    if [ "${flag_no_install_pkgs}" = "0" ]
+    if [ "${flag_install_pkgs}" = "1" ]
     then
         install_pkgs || exit 1
     fi
 
-    if [ "${flag_no_install_salt}" = "0" ]
+    if [ "${flag_install_salt}" = "1" ]
     then
         install_salt || exit 1
     fi
 
-    if [ "${flag_no_install_modules}" = "0" ]
+    if [ "${flag_install_modules}" = "1" ]
     then
         install_gcf_modules "${modules}" || exit 1
     fi
