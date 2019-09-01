@@ -160,7 +160,7 @@ install_gcf_modules()
 
 main()
 {
-    local modules=${BASE_MODULES}
+    local modules=
     local flag_install_gcf=0
     local flag_install_pkgs=0
     local flag_install_salt=0
@@ -218,11 +218,10 @@ main()
 
     if [ "${flag_install_modules}" = "1" ]
     then
-        install_gcf_modules "${modules}" || exit 1
+        install_gcf_modules "${BASE_MODULES}" || exit 1
     fi
 
-    echo_dbg "Cleaning up..."
-    rm -rf /tmp/* || exit 1
+    install_gcf_modules "${modules}" || exit 1
 }
 
 main "${@}"
