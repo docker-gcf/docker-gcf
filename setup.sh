@@ -83,8 +83,8 @@ main()
     echo_dbg "Downloading docker-gcf archive..."
     dl_file "${ZIP_URL}" "/tmp/docker-gcf.zip" || exit 1
     cd /tmp && unzip docker-gcf.zip && rm docker-gcf.zip || exit 1
-    rm -rf "/usr/local/src/docker-gcf-${VERSION}" && \
-    mv "/tmp/docker-gcf-${VERSION}" /usr/local/src/ || exit 1
+    rm -rf "/usr/local/src/docker-gcf" && \
+    mv "/tmp/docker-gcf-${VERSION}" /usr/local/src/docker-gcf || exit 1
 
     exec sh /usr/local/src/docker-gcf/src/setup.sh -gpsn "${@}"
 }
