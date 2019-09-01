@@ -97,21 +97,21 @@ install_gcf_module_folder()
     install_folder "${folder_path}/src/common/salt/" /etc/salt/base/ && \
     install_folder "${folder_path}/src/common/bin/" /usr/local/bin/ && \
     install_folder "${folder_path}/src/debian/bin/" /usr/local/bin/ || return 1
-
-    folder_name="$(basename "${folder_path}")"
-    rm -r "/usr/local/src/${folder_name}" && \
-    mv "${folder_path}" /usr/local/src/ || return 1
 }
 
 install_gcf_module_zip()
 {
     local zip_path="${1}"
     local folder_path="/tmp/$(unzip -Z -1 "${zip_path}" | head -n1)"
+    local folder_name="$(basename "${folder_path}")"
     echo_dbg "Installing gcf module ${zip_path} from zip..."
 
     cd "/tmp" && \
     unzip -o "${zip_path}" && \
     install_gcf_module_folder "${folder_path}" || return 1
+
+    rm -rf "/usr/local/src/${folder_name}" && \
+    mv "${folder_path}" /usr/local/src/ || return 1
 }
 
 install_gcf_modules()
