@@ -3,6 +3,8 @@
 BASE_DIR=${BASE_DIR:="$(dirname "${0}")/.."}
 BASE_MODULES=""
 
+_OSTYPE=""
+
 echo_dbg()
 {
   echo "====" "${@}"
@@ -17,7 +19,7 @@ has_exe()
 {
   local exe_name="${1}"
 
-  if which "${exe_name}" 2>&1 >/dev/null
+  if type "${exe_name}" 2>&1 >/dev/null
   then
     res=0
   else
@@ -25,6 +27,63 @@ has_exe()
   fi
 
   return "${res}"
+}
+
+# From pacapt
+# Detect package type from /etc/issue
+_found_arch() {
+  local _ostype="$1"
+  shift
+  grep -qis "$*" /etc/issue && _OSTYPE="$_ostype"
+}
+
+# Detect package type
+_OSTYPE_detect() {
+  _found_arch PACMAN "Arch Linux" && return
+  _found_arch DPKG   "Debian GNU/Linux" && return
+  _found_arch DPKG   "Ubuntu" && return
+  _found_arch YUM    "CentOS" && return
+  _found_arch YUM    "Red Hat" && return
+  _found_arch YUM    "Fedora" && return
+  _found_arch ZYPPER "SUSE" && return
+
+  [[ -z "$_OSTYPE" ]] || return
+
+  # See also https://github.com/icy/pacapt/pull/22
+  # Please not that $OSTYPE (which is `linux-gnu` on Linux system)
+  # is not our $_OSTYPE. The choice is not very good because
+  # a typo can just break the logic of the program.
+  if [[ "$OSTYPE" != "darwin"* ]]; then
+    echo_err "Can't detect OS type from /etc/issue. Running fallback method."
+  fi
+  [[ -x "/usr/bin/pacman" ]]           && _OSTYPE="PACMAN" && return
+  [[ -x "/usr/bin/apt-get" ]]          && _OSTYPE="DPKG" && return
+  [[ -x "/usr/bin/yum" ]]              && _OSTYPE="YUM" && return
+  [[ -x "/opt/local/bin/port" ]]       && _OSTYPE="MACPORTS" && return
+  command -v brew >/dev/null           && _OSTYPE="HOMEBREW" && return
+  [[ -x "/usr/bin/emerge" ]]           && _OSTYPE="PORTAGE" && return
+  [[ -x "/usr/bin/zypper" ]]           && _OSTYPE="ZYPPER" && return
+  if [[ -z "$_OSTYPE" ]]; then
+    echo_err "No supported package manager installed on system"
+    echo_err "(supported: apt, homebrew, pacman, portage, yum)"
+    return 1
+  fi
+}
+
+YUM_pkgs_clean()
+{
+  yum clean all || return 1
+}
+
+DPKG_pkgs_clean()
+{
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* || return 1
+}
+
+pkgs_clean()
+{
+  ${_OSTYPE}_pkgs_clean || return 1
 }
 
 dl_file()
@@ -53,9 +112,23 @@ install_gcf()
     install_gcf_module_folder "${BASE_DIR}" || return 1
 }
 
-install_pkgs()
+YUM_install_pkgs()
 {
-    echo_dbg "Installing basic packages..."
+
+    local deps_setup="ca-certificates wget curl gawk grep unzip"
+    local deps_runtime_utils="jq ssmtp moreutils"
+    local deps_runtime_main="supervisor rsyslog"
+    local deps_wait_for_tcp="nc coreutils"
+
+    pkgs-install epel-release
+
+    pkgs-install ${deps_setup} ${deps_runtime_utils} ${deps_runtime_main} ${deps_wait_for_tcp} || return 1
+
+    touch /etc/default/locale
+}
+
+DPKG_install_pkgs()
+{
 
     local deps_setup="ca-certificates wget curl gawk grep unzip"
     local deps_runtime_utils="jq ssmtp moreutils"
@@ -65,6 +138,13 @@ install_pkgs()
     pkgs-install ${deps_setup} ${deps_runtime_utils} ${deps_runtime_main} ${deps_wait_for_tcp} || return 1
 
     touch /etc/default/locale
+}
+
+install_pkgs()
+{
+    echo_dbg "Installing basic packages..."
+
+    ${_OSTYPE}_install_pkgs || return 1
 }
 
 install_salt()
@@ -97,7 +177,7 @@ install_gcf_module_folder()
 
     install_folder "${folder_path}/src/common/salt/" /etc/salt/base/ && \
     install_folder "${folder_path}/src/common/bin/" /usr/local/bin/ && \
-    install_folder "${folder_path}/src/debian/bin/" /usr/local/bin/ || return 1
+    install_folder "${folder_path}/src/${_OSTYPE}/bin/" /usr/local/bin/ || return 1
 }
 
 install_gcf_module_zip()
@@ -172,13 +252,15 @@ main()
     local flag_install_salt=0
     local flag_install_modules=0
 
-    if has_exe apt-get
+    _OSTYPE_detect || exit 1
+
+    if ! has_exe "${_OSTYPE}_pkgs_clean"
     then
-        echo_dbg "apt-get is available, assuming Debian-like distro."
-    else
-        echo_err "Distro is not supported"
-        exit 1
+        echo_dbg "${_OSTYPE} is not supported"
+        return 1
     fi
+
+    echo_dbg "Using ${_OSTYPE}"
 
     while getopts 'm:gpsn' c
     do
@@ -228,6 +310,10 @@ main()
     fi
 
     install_gcf_modules "${modules}" || exit 1
+
+    echo_dbg "Cleaning"
+    pkgs_clean
+
 }
 
 main "${@}"

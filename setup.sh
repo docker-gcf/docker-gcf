@@ -9,6 +9,8 @@ ZIP_URL="https://github.com/docker-gcf/docker-gcf/archive/${VERSION_PREFIX}${VER
 
 PKGS_CACHE_UPDATED=0
 
+_OSTYPE=""
+
 echo_dbg()
 {
     echo "====" "${@}"
@@ -23,10 +25,51 @@ has_exe()
 {
   local exe_name="${1}"
 
-  if which "${exe_name}" 2>&1 >/dev/null
+  if type "${exe_name}" 2>&1 >/dev/null
   then
     return 0
   else
+    return 1
+  fi
+}
+
+# From pacapt
+# Detect package type from /etc/issue
+_found_arch() {
+  local _ostype="$1"
+  shift
+  grep -qis "$*" /etc/issue && _OSTYPE="$_ostype"
+}
+
+# Detect package type
+_OSTYPE_detect() {
+  _found_arch PACMAN "Arch Linux" && return
+  _found_arch DPKG   "Debian GNU/Linux" && return
+  _found_arch DPKG   "Ubuntu" && return
+  _found_arch YUM    "CentOS" && return
+  _found_arch YUM    "Red Hat" && return
+  _found_arch YUM    "Fedora" && return
+  _found_arch ZYPPER "SUSE" && return
+
+  [[ -z "$_OSTYPE" ]] || return
+
+  # See also https://github.com/icy/pacapt/pull/22
+  # Please not that $OSTYPE (which is `linux-gnu` on Linux system)
+  # is not our $_OSTYPE. The choice is not very good because
+  # a typo can just break the logic of the program.
+  if [[ "$OSTYPE" != "darwin"* ]]; then
+    echo_err "Can't detect OS type from /etc/issue. Running fallback method."
+  fi
+  [[ -x "/usr/bin/pacman" ]]           && _OSTYPE="PACMAN" && return
+  [[ -x "/usr/bin/apt-get" ]]          && _OSTYPE="DPKG" && return
+  [[ -x "/usr/bin/yum" ]]              && _OSTYPE="YUM" && return
+  [[ -x "/opt/local/bin/port" ]]       && _OSTYPE="MACPORTS" && return
+  command -v brew >/dev/null           && _OSTYPE="HOMEBREW" && return
+  [[ -x "/usr/bin/emerge" ]]           && _OSTYPE="PORTAGE" && return
+  [[ -x "/usr/bin/zypper" ]]           && _OSTYPE="ZYPPER" && return
+  if [[ -z "$_OSTYPE" ]]; then
+    echo_err "No supported package manager installed on system"
+    echo_err "(supported: apt, homebrew, pacman, portage, yum)"
     return 1
   fi
 }
@@ -48,19 +91,29 @@ dl_file()
     fi
 }
 
-debian_pkgs_update()
+YUM_pkgs_update()
+{
+  yum check-update || return 1
+}
+
+YUM_pkgs_install()
+{
+  yum install -y "${@}" || return 1
+}
+
+DPKG_pkgs_update()
 {
   apt-get update || return 1
 }
 
-debian_pkgs_install()
+DPKG_pkgs_install()
 {
   apt-get install --no-install-recommends -y "${@}" || return 1
 }
 
 pkgs_update()
 {
-  debian_pkgs_update || return 1
+  ${_OSTYPE}_pkgs_update || return 1
 }
 
 pkgs_install()
@@ -72,11 +125,22 @@ pkgs_install()
     PKGS_CACHE_UPDATED=1
   fi
 
-  debian_pkgs_install "${@}" || return 1
+  ${_OSTYPE}_pkgs_install "${@}" || return 1
 }
 
 main()
 {
+    _OSTYPE_detect || exit 1
+
+    if ! has_exe "${_OSTYPE}_pkgs_install"
+    then
+        echo_dbg "${_OSTYPE} is not supported"
+        return 1
+    fi
+
+    echo_dbg "Using ${_OSTYPE}"
+
+
     echo_dbg "Installing basic packages..."
     pkgs_install ca-certificates wget curl unzip || exit 1
 

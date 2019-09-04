@@ -1,0 +1,5 @@
+#! /bin/sh
+
+yum check-update && \
+  yum install -y "${@}" && \
+  yum clean all
