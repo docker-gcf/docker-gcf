@@ -12,7 +12,7 @@ fi
 if [ "${GCF_DEBUG_SHOW_MODEL_JSON}" = "1" ]
 then
     echo "==== Showing gcf-model.json"
-    cat /tmp/gcf-model.json
+    cat /etc/gcf/gcf-model.json
 fi
 
 if [ "${GCF_DEBUG_NO_RUN}" = "1" ]

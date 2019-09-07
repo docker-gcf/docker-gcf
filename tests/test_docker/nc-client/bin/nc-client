@@ -1,7 +1,7 @@
 #! /bin/sh
 
-host="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.host)"
-port="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.port)"
+host="$(cat /etc/gcf/gcf-model.json | jq -r .model.nc_server.host)"
+port="$(cat /etc/gcf/gcf-model.json | jq -r .model.nc_server.port)"
 
 while :
 do

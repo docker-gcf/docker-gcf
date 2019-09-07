@@ -1,6 +1,6 @@
 #! /bin/sh
 
-port="$(cat /tmp/gcf-model.json | jq -r .model.nc_server.port)"
+port="$(cat /etc/gcf/gcf-model.json | jq -r .model.nc_server.port)"
 
 echo "Simulating initialization latency..."
 
