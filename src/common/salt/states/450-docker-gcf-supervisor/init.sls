@@ -10,7 +10,7 @@
     "stderr_logfile_maxbytes": 0,
     "stopsignal": "INT"
   },
-  "wrapper": None
+  "wrappers": []
 } %}
 
 {{ state_name }}-config-dir:
