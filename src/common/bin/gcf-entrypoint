@@ -1,24 +1,70 @@
-#! /bin/sh
+#! /usr/bin/env python3
+import json
+import os
+import subprocess
+import sys
 
-set -e
 
-if [ "${GCF_DEBUG_NO_GCF}" = "1" ]
-then
-    echo "==== Skipping gcf"
-else
-    gcf
-fi
+def clear_env():
+    vars = []
+    for var in os.environ:
+        if var.startswith('GCF__') or var == 'GCF':
+            vars.append(var)
+    for var in vars:
+        del os.environ[var]
 
-if [ "${GCF_DEBUG_SHOW_MODEL_JSON}" = "1" ]
-then
-    echo "==== Showing gcf-model.json"
-    cat /etc/gcf/gcf-model.json
-fi
 
-if [ "${GCF_DEBUG_NO_RUN}" = "1" ]
-then
-    echo "==== Not running cmd"
-    exit 0
-else
-    exec "${@}"
-fi
+def get_value(data, key, default_value):
+    current_node = data
+    keys = key.split(':')
+    for k in keys:
+        if k in current_node:
+            current_node = current_node[k]
+        else:
+            return default_value
+    return current_node
+
+
+def get_pillars():
+    pillar_result = subprocess.run(['salt-call', '--local', '--skip-grains', '--out', 'json', 'pillar.items'],
+                                   stdout=subprocess.PIPE)
+    if pillar_result.returncode != 0:
+        return None
+    output_str = pillar_result.stdout.decode('utf-8')
+    output_json = json.loads(output_str)
+    local_node = get_value(output_json, 'local', {})
+    return local_node
+
+
+def main(argv):
+    pillar = get_pillars()
+    entrypoint_debug = get_value(pillar, 'gcf:entrypoint:debug', {})
+    dbg_pillar_print = get_value(entrypoint_debug, 'pillar:print', False)
+    dbg_apply_execute = get_value(entrypoint_debug, 'apply:execute', True)
+    dbg_apply_print = get_value(entrypoint_debug, 'apply:print', False)
+    dbg_env_clear = get_value(entrypoint_debug, 'env:clear', True)
+    dbg_cmd_execute = get_value(entrypoint_debug, 'cmd:execute', True)
+
+    if dbg_pillar_print:
+        print(json.dumps(pillar))
+
+    if dbg_apply_execute:
+        output_stream = None if dbg_apply_print else subprocess.PIPE
+        pillar_result = subprocess.run(['gcf-apply'], stdout=output_stream)
+        if pillar_result.returncode != 0:
+            print('Failed to run gcf-apply. Set gcf:entrypoint:debug:apply:print to true for more info.', file=sys.stderr)
+            return pillar_result.returncode
+    else:
+        print('==== Skipping gcf-apply')
+
+    if dbg_env_clear:
+        clear_env()
+
+    if dbg_cmd_execute:
+        os.execvp(argv[1], argv[1:])
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

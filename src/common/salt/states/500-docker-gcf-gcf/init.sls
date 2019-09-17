@@ -7,8 +7,8 @@
     - group: root
     - mod: 755
 
-{{ state_name }}-gcf-model-json:
+{{ state_name }}-gcf-pillar-json:
   file.managed:
-    - name: /etc/gcf/gcf-model.json
-    - source: salt://{{ tpldir }}/gcf-model.json
+    - name: /etc/gcf/gcf-pillar.json
+    - source: salt://{{ tpldir }}/gcf-pillar.json
     - template: jinja

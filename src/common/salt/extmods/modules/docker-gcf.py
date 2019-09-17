@@ -6,7 +6,7 @@ PILLARS_DIR = os.path.join(BASE_DIR, "pillars")
 STATES_DIR = os.path.join(BASE_DIR, "states")
 
 
-def get_model_from_env(env_dict=os.environ, env_prefix="GCF", env_separator="__"):
+def get_dict_from_env(env_dict=os.environ, env_prefix="GCF", env_separator="__"):
     model = {}
     for env_name in env_dict:
         full_prefix = "%s%s" % (env_prefix, env_separator)
