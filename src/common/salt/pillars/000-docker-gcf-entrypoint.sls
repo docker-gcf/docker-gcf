@@ -12,4 +12,5 @@ gcf:
       cmd:
         execute: True
     env:
-      exports: {}
+      exports:
+        TZ: Europe/London
