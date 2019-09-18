@@ -5,16 +5,21 @@ x-common: &common
   env_file:
     - env
   environment:
-    - "GCF_DEBUG_SHOW_MODEL_JSON=1"
+    - "GCF__gcf__entrypoint__debug__pillar__print=true"
 
 services:
   nc-server:
     << : *common
-    build: ./nc-server
+    build:
+      context: .
+      dockerfile: nc-server/Dockerfile
+
     ports:
       - "0.0.0.0:4242:4242/tcp"
   nc-client:
     << : *common
-    build: ./nc-client
+    build:
+      context: .
+      dockerfile: nc-client/Dockerfile
     links:
       - nc-server

@@ -1,11 +1,8 @@
 #! /bin/sh
 
-host="$(cat /etc/gcf/gcf-model.json | jq -r .model.nc_server.host)"
-port="$(cat /etc/gcf/gcf-model.json | jq -r .model.nc_server.port)"
-
 while :
 do
     logger "Sending ping to server"
-    echo "Client is up" | nc -q 0 "${host}" "${port}"
+    echo "Client is up" | nc -q 0 "${NC_SERVER_HOST}" "${NC_SERVER_PORT}"
     sleep 5
 done

@@ -1,6 +1,3 @@
 #! /bin/sh
 
-host="$(cat /etc/gcf/gcf-model.json | jq -r .model.nc_server.host)"
-port="$(cat /etc/gcf/gcf-model.json | jq -r .model.nc_server.port)"
-
-wait-for test-tcp-port -h "${host}" -p "${port}" -- "${@}"
+wait-for test-tcp-port -h "${NC_SERVER_HOST}" -p "${NC_SERVER_PORT}" -- "${@}"
