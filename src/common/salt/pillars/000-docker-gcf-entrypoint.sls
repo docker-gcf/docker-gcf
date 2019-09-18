@@ -3,9 +3,6 @@ gcf:
     debug:
       pillar:
         print: False
-      apply:
-        print: False
-        execute: True
       env:
         clear: True
         export: True

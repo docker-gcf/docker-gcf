@@ -5,6 +5,9 @@ import subprocess
 import sys
 
 
+LOG_FILE_APPLY = '/var/log/gcf-apply.log'
+
+
 def clear_env():
     vars = []
     for var in os.environ:
@@ -37,28 +40,23 @@ def get_pillars():
 
 
 def main(argv):
+    with open(LOG_FILE_APPLY, 'w') as f:
+        pillar_result = subprocess.run(['gcf-apply'], stdout=f, stderr=f)
+    if pillar_result.returncode != 0:
+        print('Failed to run gcf-apply. Check {} for details.'.format(LOG_FILE_APPLY), file=sys.stderr)
+        return pillar_result.returncode
+
     pillar = get_pillars()
     entrypoint = get_value(pillar, 'gcf:entrypoint', {})
     env_exports = get_value(entrypoint, 'env:exports', {})
     entrypoint_debug = get_value(entrypoint, 'debug', {})
     dbg_pillar_print = get_value(entrypoint_debug, 'pillar:print', False)
-    dbg_apply_execute = get_value(entrypoint_debug, 'apply:execute', True)
-    dbg_apply_print = get_value(entrypoint_debug, 'apply:print', False)
     dbg_env_clear = get_value(entrypoint_debug, 'env:clear', True)
     dbg_env_export = get_value(entrypoint_debug, 'env:export', True)
     dbg_cmd_execute = get_value(entrypoint_debug, 'cmd:execute', True)
 
     if dbg_pillar_print:
         print(json.dumps(pillar))
-
-    if dbg_apply_execute:
-        output_stream = None if dbg_apply_print else subprocess.PIPE
-        pillar_result = subprocess.run(['gcf-apply'], stdout=output_stream)
-        if pillar_result.returncode != 0:
-            print('Failed to run gcf-apply. Set gcf:entrypoint:debug:apply:print to true for more info.', file=sys.stderr)
-            return pillar_result.returncode
-    else:
-        print('==== Skipping gcf-apply')
 
     if dbg_env_clear:
         clear_env()
