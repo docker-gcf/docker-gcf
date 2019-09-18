@@ -38,11 +38,14 @@ def get_pillars():
 
 def main(argv):
     pillar = get_pillars()
-    entrypoint_debug = get_value(pillar, 'gcf:entrypoint:debug', {})
+    entrypoint = get_value(pillar, 'gcf:entrypoint', {})
+    env_exports = get_value(entrypoint, 'env:exports', {})
+    entrypoint_debug = get_value(entrypoint, 'debug', {})
     dbg_pillar_print = get_value(entrypoint_debug, 'pillar:print', False)
     dbg_apply_execute = get_value(entrypoint_debug, 'apply:execute', True)
     dbg_apply_print = get_value(entrypoint_debug, 'apply:print', False)
     dbg_env_clear = get_value(entrypoint_debug, 'env:clear', True)
+    dbg_env_export = get_value(entrypoint_debug, 'env:export', True)
     dbg_cmd_execute = get_value(entrypoint_debug, 'cmd:execute', True)
 
     if dbg_pillar_print:
@@ -59,6 +62,10 @@ def main(argv):
 
     if dbg_env_clear:
         clear_env()
+
+    if dbg_env_export:
+        for env_export in env_exports:
+            os.environ[env_export] = env_exports[env_export]
 
     if dbg_cmd_execute:
         os.execvp(argv[1], argv[1:])

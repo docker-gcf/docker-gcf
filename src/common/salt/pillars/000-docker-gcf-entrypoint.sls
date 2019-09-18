@@ -8,7 +8,8 @@ gcf:
         execute: True
       env:
         clear: True
+        export: True
       cmd:
         execute: True
     env:
-      exports: []
+      exports: {}
